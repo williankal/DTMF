@@ -123,19 +123,6 @@ def main():
     posicao = val_list.index([linha,coluna])
     print("A tecla selecionada foi: ", key_list[posicao])
 
-    x1, y1 = bibSignal.generateSin(linha, A, T, fs)
-    x2, y2 = bibSignal.generateSin(coluna, A, T, fs)
-    xSinal = x1 + x2
-    ySinal = y1 + y2
-
-    plt.plot(t[:800], ySinal[:800])
-    #plt.xlim(0.1, 0.2)
-    plt.xlabel("Tempo")
-    plt.ylabel("Frequencia")
-    plt.title("Tempo x Frequencia Somada")
-    bibSignal.plotFFT(ySinal, fs)
-
-    
     ## Exibe gráficos
     plt.show()
 
