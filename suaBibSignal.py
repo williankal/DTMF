@@ -22,7 +22,7 @@ class signalMeu:
     def calcFFT(self, signal, fs):
         # https://docs.scipy.org/doc/scipy/reference/tutorial/fftpack.html
         N  = len(signal)
-        W = window.hamming(N)
+        W = window.hamming(N) #serve para reduzir a ondulação que ocorre nas pontas dos picos
         T  = 1/fs
         xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
         yf = fft(signal*W)

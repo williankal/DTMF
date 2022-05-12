@@ -6,6 +6,11 @@ import numpy as np
 import sounddevice as sd
 import matplotlib.pyplot as plt
 
+"""
+A transformada de fourier(FFT) é utilizada para transformar um sinal digital no dominio do tempo, para um sinal com dominio na frequencia
+No gráfico: x --> valores de frequencia de 0 a fs(no caso desse arquivo seria 44100 por segundo) | y --> amplitude
+"""
+
 #funções a serem utilizadas
 def signal_handler(signal, frame):
         print('You pressed Ctrl+C!')
@@ -27,7 +32,7 @@ def frequencies_list(tecla):
             return list[tecla][0], list[tecla][1]
 
         else:
-            print("--------------------------")
+            print("-------------------------")
             print("A tecla não existe, tentar novamente")
             print("As únicas teclas possívesi são: 0 a 9, ou A,B,C,D,X,#:")
             exit()
@@ -56,7 +61,7 @@ def main():
     print("o valor selecionado foi: ", valor_selecionado)
     frequencia1 , frequencia2 = frequencies_list(valor_selecionado)
 
-    print("--------------")
+    print("-------------------------")
     fs  = 44100  # pontos por segundo (frequência de amostragem)
     A   = 1.5   # Amplitude
     F   = 1     # Hz
@@ -66,27 +71,30 @@ def main():
     #generateSin returns (x,s) --> (?, senoide)
     x1, y1 = bibSignal.generateSin(frequencia1, A, T, fs)
     x2, y2 = bibSignal.generateSin(frequencia2, A, T, fs)
+
     #somar as senoides para geral o sinaly2
     xSinal = x1 + x2
     ySinal = y1 + y2
-    
+
     print("Gerando Tom referente ao símbolo : {}".format(valor_selecionado))
     sd.play(ySinal, fs)
 
     print("Executando as senoides (emitindo o som)")
 
+    #plt.plot(t,ySinal)
     plt.plot(t[:800], ySinal[:800])
     #plt.xlim(0.1, 0.2)
     plt.xlabel("Tempo")
     plt.ylabel("Frequencia")
     plt.title("Tempo x Frequencia Somada")
 
-    bibSignal.plotFFT(ySinal, FS)
+    bibSignal.plotFFT(ySinal, fs)
     # Exibe gráficos
     plt.show()
     # aguarda fim do audio
     sd.wait()
 
+    plt.show()
 
 if __name__ == "__main__":
     main()
