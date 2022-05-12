@@ -18,10 +18,12 @@ def todB(s):
 
 
 def main():
-    tecla_list = {"1": [697,1206], "2": [697,1339], "3": [697,1477], "A": [697, 1633],
+    tecla_dict = {"1": [697,1206], "2": [697,1339], "3": [697,1477], "A": [697, 1633],
          "4": [770,1206], "5": [770,1339], "6": [770,1477], "B": [770, 1633],
          "7": [852,1206], "8": [852,1339], "9": [852,1477], "C": [852, 1633],
-         "X": [941,1206], "0": [941,1339], "#": [941,1477], "D": [941, 1633]}  
+         "X": [941,1206], "0": [941,1339], "#": [941,1477], "D": [941, 1633]} 
+
+
     #declare um objeto da classe da sua biblioteca de apoio (cedida)   
     bibSignal = signalMeu()
  
@@ -34,7 +36,8 @@ def main():
     # os seguintes parametros devem ser setados:
     
     sd.default.samplerate = fs #taxa de amostragem
-
+    linha = 0
+    coluna = 0
 
 
     sd.default.channels = 2  #voce pode ter que alterar isso dependendo da sua placa
@@ -95,14 +98,44 @@ def main():
     for freq in xf[index]:
         print("freq de pico sao {}" .format(freq))
         valoresPico.append(freq)
-        
+
+    tolerancia = 15
+
+    rangeFrequenciasMin = [697, 770, 852, 941] 
+    rangeFrequenciasMax = [1206, 1339, 1477, 1633]
+    print(valoresPico)
     for pico in valoresPico:
+        for value in rangeFrequenciasMin:
+            if value-tolerancia < pico < value + tolerancia:
+                linha = value
+        for value2 in rangeFrequenciasMax:
+            if value2-tolerancia < pico < value2 + tolerancia:
+                coluna = value2
 
     #encontre na tabela duas frequencias proximas às frequencias de pico encontradas e descubra qual foi a tecla
-
-    #print a tecla.
     
-  
+    print("Valores de frequencia encontrados: ", coluna)
+    print(linha)
+    
+    key_list = list(tecla_dict.keys())
+    val_list = list(tecla_dict.values())
+
+    posicao = val_list.index([linha,coluna])
+    print("A tecla selecionada foi: ", key_list[posicao])
+
+    x1, y1 = bibSignal.generateSin(linha, A, T, fs)
+    x2, y2 = bibSignal.generateSin(coluna, A, T, fs)
+    xSinal = x1 + x2
+    ySinal = y1 + y2
+
+    plt.plot(t[:800], ySinal[:800])
+    #plt.xlim(0.1, 0.2)
+    plt.xlabel("Tempo")
+    plt.ylabel("Frequencia")
+    plt.title("Tempo x Frequencia Somada")
+    bibSignal.plotFFT(ySinal, fs)
+
+    
     ## Exibe gráficos
     plt.show()
 
