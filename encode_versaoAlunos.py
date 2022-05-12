@@ -1,5 +1,6 @@
 
 #importe as bibliotecas
+from curses.ascii import FS
 from suaBibSignal import *
 import numpy as np
 import sounddevice as sd
@@ -15,12 +16,25 @@ def todB(s):
     sdB = 10*np.log10(s)
     return(sdB)
 
+#range de frequencias para gerar a senoide
+def frequencies_list(tecla):
+        list = {"1": [697,1206], "2": [697,1339], "3": [697,1477], "A": [697, 1633],
+         "4": [770,1206], "5": [770,1339], "6": [770,1477], "B": [770, 1633],
+         "7": [852,1206], "8": [852,1339], "9": [852,1477], "C": [852, 1633],
+         "X": [941,1206], "0": [941,1339], "#": [941,1477], "D": [941, 1633]}   
 
+        if tecla in list.keys():
+            return list[tecla][0], list[tecla][1]
 
+        else:
+            print("--------------------------")
+            print("A tecla não existe, tentar novamente")
+            print("As únicas teclas possívesi são: 0 a 9, ou A,B,C,D,X,#:")
+            exit()
+            
 
 def main():
-    
-   
+    bibSignal = signalMeu()
     #********************************************instruções*********************************************** 
     # seu objetivo aqui é gerar duas senoides. Cada uma com frequencia corresposndente à tecla pressionada
     # então inicialmente peça ao usuário para digitar uma tecla do teclado numérico DTMF
@@ -34,20 +48,45 @@ def main():
     # grave o som com seu celular ou qualquer outro microfone. Cuidado, algumas placas de som não gravam sons gerados por elas mesmas. (Isso evita microfonia).
     
     # construa o gráfico do sinal emitido e o gráfico da transformada de Fourier. Cuidado. Como as frequencias sao relativamente altas, voce deve plotar apenas alguns pontos (alguns periodos) para conseguirmos ver o sinal
-    
-
     print("Inicializando encoder")
+
     print("Aguardando usuário")
-    print("Gerando Tons base")
+
+    valor_selecionado = input("Escolha um número de 0 a 9, ou A,B,C,D,X,#: ")
+    print("o valor selecionado foi: ", valor_selecionado)
+    frequencia1 , frequencia2 = frequencies_list(valor_selecionado)
+
+    print("--------------")
+    fs  = 44100  # pontos por segundo (frequência de amostragem)
+    A   = 1.5   # Amplitude
+    F   = 1     # Hz
+    T   = 4     # Tempo em que o seno será gerado
+    t   = np.linspace(-T/2,T/2,T*fs)
+
+    #generateSin returns (x,s) --> (?, senoide)
+    x1, y1 = bibSignal.generateSin(frequencia1, A, T, fs)
+    x2, y2 = bibSignal.generateSin(frequencia2, A, T, fs)
+    #somar as senoides para geral o sinaly2
+    xSinal = x1 + x2
+    ySinal = y1 + y2
+    
+    print("Gerando Tom referente ao símbolo : {}".format(valor_selecionado))
+    sd.play(ySinal, fs)
+
     print("Executando as senoides (emitindo o som)")
-    print("Gerando Tom referente ao símbolo : {}".format(NUM))
-    sd.play(tone, fs)
+
+    plt.plot(t[:800], ySinal[:800])
+    #plt.xlim(0.1, 0.2)
+    plt.xlabel("Tempo")
+    plt.ylabel("Frequencia")
+    plt.title("Tempo x Frequencia Somada")
+
+    bibSignal.plotFFT(ySinal, FS)
     # Exibe gráficos
     plt.show()
     # aguarda fim do audio
     sd.wait()
-    plotFFT(self, signal, fs)
-    
+
 
 if __name__ == "__main__":
     main()
